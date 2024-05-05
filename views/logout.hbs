@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <link rel="stylesheet" href="./../bootstrap-5.3.2-dist/css/bootstrap-reboot.min.css">
+
+    <link rel="stylesheet" href="./../bootstrap-5.3.2-dist/css/bootstrap-utilities.min.css">
+    <link rel="stylesheet" href="./../bootstrap-5.3.2-dist/css/bootstrap-grid.min.css">
+    <link rel="stylesheet" href="./../bootstrap-5.3.2-dist/css/bootstrap.min.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="./../bootstrap-5.3.2-dist/js/bootstrap.min.js"></script>
+    <script src="./../bootstrap-5.3.2-dist/js/bootstrap.esm.min.js"></script>
+    <script src="./../bootstrap-5.3.2-dist/js/bootstrap.bundle.min.js"></script>
+
+    <title>{{title}}</title>
+</head>
+<body>
+<!-- MODAL FOR ADDING PORTFOLIOS -->
+    <div class="wrapper">
+
+        {{> nav}}
+
+        <main class="main">
+            <div class="profile-container">
+                <div class="container">
+                    <div class="logout-form">
+                    <h1>{{pageTitle}}</h1>
+                    <form action="/logout" method="POST">
+                        <a href="/">Назад</a>
+                        <input type="submit" value="Выйти">
+                    </form>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    {{> footer}}
+</body>
+</html>

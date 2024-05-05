@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+        
+        <link rel="stylesheet" href="./../bootstrap-5.3.2-dist/css/bootstrap-reboot.min.css">
+        <link rel="stylesheet" href="./../bootstrap-5.3.2-dist/css/bootstrap-utilities.min.css">
+        <link rel="stylesheet" href="./../bootstrap-5.3.2-dist/css/bootstrap-grid.min.css">
+        <link rel="stylesheet" href="./../bootstrap-5.3.2-dist/css/bootstrap.min.css">
+
+        <link rel="stylesheet" href="../css/styles.css">
+    
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+        <script src="./../bootstrap-5.3.2-dist/js/bootstrap.min.js"></script>
+        <script src="./../bootstrap-5.3.2-dist/js/bootstrap.esm.min.js"></script>
+        <script src="./../bootstrap-5.3.2-dist/js/bootstrap.bundle.min.js"></script>
+
+        <style>
+            .portfolio .portfolio-container .container {
+                background-color: {{BackgroundColor}};
+            }
+        </style>
+
+        <title>Портфолио</title>
+    </head>
+<body>
+    <div class="wrapper">
+
+    <!-- ---------------- MODAL SECTION ----------------- -->
+
+        <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content bg-dark-subtle">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-3" id="exampleModalLabel">Добавить контакт</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-floating">
+                        <input type="text" id="newContactName" maxlength="30" class="form-control" placeholder="Twitter">
+                        <label for="newContactName">Название</label>
+                    </div>
+                    <div class="form-floating mt-3">
+                        <input type="text" id="newContactAddress" class="form-control" placeholder="address">
+                        <label for="newContactAddress">Адрес</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                  <button type="button" id="acceptContact" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#contactModal">Принять</button>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <!-- DELETE ATTENTION -->
+
+        <div class="modal fade" id="deleteSectionModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">Удалить секцию</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Вы действительно хотите полностью удалить эту секцию? Перенесите все свои работы в другие секции, иначе все данные будут удалены навсегда.</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                  <button id="acceptDeleteSection" type="button" class="btn btn-danger">Удалить</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        {{!-- PORTFOLIO DELETE ATTENTION  --}}
+        <div class="modal fade" id="portfolioDeleteAttentionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Удаление портфолио</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Вы уверены, что хотите удалить портфолио? Все данные будут безвозвратно потеряны.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelRemovingModal" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-danger" id="acceptRemovingPortfolio">Удалить</button>
+                </div>
+                </div>
+            </div>
+        </div>
+        <!-- modal for adding works -->
+
+        <div class="modal fade" id="addingWorkModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Добавить работу</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="#" name="workForm" enctype="multipart/form-data">
+                            <input name="formWorkName" class="form-control" type="text" placeholder="Название" maxlength="160" required>
+                            <input name="formFiles" class="form-control mt-3" type="file" id="formFileMultiple" multiple required>
+                            <div id="workFormURL" class="form-text">Загруженное изображение также станет на место обложки, иначе ее не будет</div>
+                            <input name="formWorkLink" class="form-control mt-3" type="url" placeholder="Ссылка">
+                            <div id="workFormURL" class="form-text">Видеоролики добавляются только через ссылку на видеохостинг</div>
+                            <textarea name="formDescription" class="form-control mt-3" name="work-descr" id="work-descr" placeholder="Напишите описание"></textarea>
+                            <p>Или добавьте уже существующую работу в эту секцию:</p>
+                            <select name="selectExistCard" class="form-select" aria-label="Default select example">
+                                <option selected disabled>Выберите работу для переноса</option>
+                                {{#each Works}}
+                                <option value="{{work_id}}">{{work_name}}</option>
+                                {{/each}}
+                            </select>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" id="cancelWorkAdding" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    <button type="button" id="acceptWorkAdding" class="btn btn-primary">Добавить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{!-- SECTION LIMIT ATTENTION --}}
+        <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" id="sectionsLimitModalActivate" data-bs-toggle="modal" data-bs-target="#sectionsLimitModal" hidden>
+  Launch demo modal
+</button>
+
+<div class="modal fade" id="sectionsLimitModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Ошибка</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Нельзя создавать больше 10 секций в одном портфолио!</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ATTENTION FOR WORK DELETE -->
+<button type="button" class="btn btn-primary" id="deleteWorkAttentionBtn" data-bs-toggle="modal" data-bs-target="#deleteWorkAttention" hidden>
+  Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteWorkAttention" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Удаление</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>вы действительно хотите удалить эту работу?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+        <button type="button" class="btn btn-primary" id="acceptDeletingWork">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{{!-- modals FOR WORK --}}
+
+{{#if isGuest}}
+{{#each Works}}
+<button type="button" class="btn btn-primary" id="openWorkModal{{work_id}}" data-bs-toggle="modal" data-bs-target="#workModal{{work_id}}" hidden>
+  btn
+</button>
+
+<div class="modal fade" id="workModal{{work_id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel"></h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-body_img-work">
+            <img src="{{this.file_path}}" alt="изображение">
+            <input type="file" id="inputDownloadNewFileWork{{work_id}}" hidden>
+        </div>
+
+            <div class="modal-body_name-work">
+                <h1>{{this.work_name}}</h1>
+            </div>
+            <div class="modal-body_description-work">
+                <p>{{this.description}}</p>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+      </div>
+    </div>
+  </div>
+</div>
+{{/each}}
+{{else}}
+{{#each Works}}
+<button type="button" class="btn btn-primary" id="openWorkModal{{work_id}}" data-bs-toggle="modal" data-bs-target="#workModal{{work_id}}" hidden>
+  btn
+</button>
+
+<div class="modal fade" id="workModal{{work_id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel"></h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-body_img-work">
+            <img src="{{this.file_path}}" alt="изображение">
+            <input type="file" id="inputDownloadNewFileWork{{work_id}}" hidden>
+            <label for="inputDownloadNewFileWork{{work_id}}" id="btnDownloadNewFileWork" title="Загрузить новую работу"></label>
+        </div>
+
+            <div class="modal-body_name-work">
+                <h1>{{this.work_name}}</h1>
+                <img src="../icons/portfolio/text-edit-icon.png" class="modal-body_name-work_change-name-btn" alt="Изменить название">
+            </div>
+            <div class="modal-body_description-work">
+                <p>{{this.description}}</p>
+                <img src="../icons/portfolio/text-edit-icon.png" class="modal-body_description-work_change-descr-btn" alt="Изменить описание">
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+      </div>
+    </div>
+  </div>
+</div>
+{{/each}}
+{{/if}}
+
+        <header>
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="header_logo col-md-12 col-lg-4">
+                        <a href="../index.html"><img src="../icons/logo.png" alt="Logo"></a>
+                    </div>
+                    <nav class="header_nav col-8">
+                        <ul class="header_nav_list">
+                            {{#if notAuthorized}}
+                            <li class="header_nav_list_item" ><a href="/registration">войти/зарегистрироваться</a></li>
+                            {{else}}
+                            <div class="dropdown">
+                                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                  Аккаунт 
+                                </a>
+                              
+                                <ol class="dropdown-menu">
+                                  <li><a class="dropdown-item" href="/profile/{{profileNickname}}">Профиль</a></li>
+                                  <li><a class="dropdown-item" href="/logout">Выйти</a></li>
+                                </ol>
+                              </div>
+                            {{/if}}  
+                        </ul>
+                    </nav>
+                    <div class="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <ul class="header_hamburger-nav_list" hidden>
+                        <li><a href="/">Главная</a></li>
+                        <li><a href="/profile">Профиль</a></li>
+                        <li><a href="/logout">Выйти</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <main class="portfolio">
+            <div class="portfolio-container">
+                {{#unless isGuest}}
+                <input type="file" id="backgroundImgFile" hidden>
+                <label for="backgroundImgFile" id="backgroundImgFileLabel" title="сменить фон"></label>
+                {{/unless}}
+                <div class="container">
+                    {{#unless isGuest}}
+                    <div class="portfolio-settings">
+                        <img src="../icons/portfolio/gear.svg" class="portfolio-settings_icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" alt="Настройки">
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#portfolioDeleteAttentionModal">Удалить портфолио</a></li>
+                        </ul>
+                    </div>
+                    <img src="../icons/portfolio/color-picker-icon.svg" class="bck-change-color" alt="сменить цвет фона" title="сменить цвет фона">
+                    {{/unless}}
+                    <input type="color" title="Choose your color" id="colorInputBackground" class="form-control form-control-color" hidden>
+                    <div class="portfolio-container_info">
+                        <div class="portfolio-container_info_image col-sm-4 col-md-3">
+                            <div class="portfolio-container_info_image_img"><img src="../icons/portfolio/user-icon.png" alt="фото профиля"></div>
+                            <div class="portfolio-container_info_image_contacts">
+                                <div class="portfolio-container_info_image_contacts_collapse-btn">Контакты <img src="../icons/portfolio/arrow-right.svg" alt=""> </div>
+                                <div class="portfolio-container_info_image_contacts_collapse-block" hidden>
+                                    <ul>
+                                        {{#if isGuest}}
+                                        {{#each Contacts}}
+                                        <div class="portfolio-container_info_image_contacts_collapse-block_contact">
+                                            <a class="contact-name" href="{{link}}" target="_blank">{{link_name}}</a>
+                                        </div>
+                                        {{/each}}
+                                        {{else}}
+                                        {{#each Contacts}}
+                                        <div class="portfolio-container_info_image_contacts_collapse-block_contact">
+                                            <a class="contact-name" href="{{link}}" target="_blank">{{link_name}}</a>
+                                            <img src="../icons/portfolio/delete-icon.svg" class="delete-contact">
+                                        </div>
+                                        {{/each}}
+                                        {{/if}}
+                                        {{#unless isGuest}}
+                                        <li>
+                                            <div class="portfolio-container_info_image_contacts_collapse-block_add-contact" title="добавить контакт" data-bs-toggle="modal" data-bs-target="#contactModal">
+                                                <img src="../icons/portfolio/add-contact-icon.png" alt="add contact">
+                                            </div>
+                                        </li>
+                                        {{/unless}}
+
+
+                                        <!-- BLOCK CONTACT TEMPLATE -->
+                                        <!-- <li><div class="portfolio-container_info_image_contacts_collapse-block_contact">
+                                            <h3 class="contact-name">контакт</h3>
+                                            <p class="contact-link">Ссылка</p>
+                                        </div></li> -->
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="portfolio-container_info_text-content col-9">
+                            <h2 class="portfolio-container_info_text-content_username"><a href="/profile/{{Nickname}}">{{Nickname}}</a></h2>
+                            <div class="portfolio-container_info_text-content_block-name">
+                                <h3 class="portfolio-container_info_text-content_name">{{Name}}</h3>
+                                {{#unless isGuest}}
+                                <img src="../icons/portfolio/descr-edit-icon.png" class="portfolio-container_info_text-content_name_img-change" alt="сменить имя">
+                                {{/unless}}
+                            </div>
+                            <div class="portfolio-container_info_text-content_descr"><p>{{PortfolioDescription}}</p>
+                            {{#unless isGuest}}
+                            <img src="../icons/portfolio/descr-edit-icon.png" alt="сменить описание">
+                            {{/unless}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sections">
+
+                        <!-- TEMPPLATE FOR DEFAULT SECTIONS BLOCK -->
+                        <!-- <div class="section">
+                            <div class="section_title">
+                                <h2 class="section_title_name">Секция 1</h2>
+                                <img src="../icons/portfolio/text-edit-icon.png" class="section_title_icon" alt="Изменить название" title="Изменить название">
+                            </div>
+                            <div class="section_block">
+                                <div class="section_block_work">
+                                    <div class="section_block_work_add-work">
+                                        <img src="../icons/portfolio/add-work-icon.png" alt="добавить работу">
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+                        {{#if isGuest}}
+                        {{#each Sections}}
+                        <div class="section" data-section-id="{{id}}">
+                            <div class="section_title">
+                                <h2 class="section_title_name">{{name}}</h2>
+                                {{!-- <img src="../icons/portfolio/text-edit-icon.png" class="section_title_icon" alt="Изменить название" title="Изменить название"> --}}
+                            </div>
+                            <div class="section_block">
+                            {{#if this.works.length}}
+                            {{#each this.works}}
+                                <div class="section_block_work" data-work-id="{{this.work_id}}">
+
+          
+                                    <div class="section_block_work_cover"><img src="{{this.file_path}}" alt="Обложка карточки"></div>
+                                    <div class="section_block_work_name">{{work_name}}</div>
+                                </div>
+                            {{/each}}
+                            {{/if}}
+                            </div>
+                        </div>
+                        {{/each}}
+                        {{else}}
+                        {{#each Sections}}
+                        <div class="section" data-section-id="{{id}}">
+                            <div class="section_title">
+                                <h2 class="section_title_name">{{name}}</h2>
+                                <img src="../icons/portfolio/text-edit-icon.png" class="section_title_icon" alt="Изменить название" title="Изменить название">
+                            </div>
+                            <img class="delete-section" data-bs-toggle="modal" data-bs-target="#deleteSectionModal" src="../icons/portfolio/delete-icon.svg" title="удалить секцию">
+                            <div class="section_block">
+                            {{#if this.works.length}}
+                            {{#each this.works}}
+                                <div class="section_block_work" data-work-id="{{this.work_id}}">
+
+                                    <img src="../icons/portfolio/delete-icon.svg" class="section_block_work_delete-work" alt="удалить">
+          
+                                    <div class="section_block_work_cover"><img src="{{this.file_path}}" alt="Обложка карточки"></div>
+                                    <div class="section_block_work_name">{{work_name}}</div>
+                                </div>
+                            {{/each}}
+                            {{/if}}
+                                <div class="section_block_work">
+                                    <div class="section_block_work_add-work">
+                                        <img data-bs-toggle="modal" data-bs-target="#addingWorkModal" src="../icons/portfolio/add-work-icon.png" alt="добавить работу">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        {{/each}}
+                        {{/if}}
+                    </div>
+
+                    {{#unless isGuest}}
+                    <div class="add-section">
+                        <h3>Добавить секцию</h3>
+                        <img src="../icons/portfolio/add-section-icon.png" alt="добавить секцию">
+                    </div>
+                    {{/unless}}
+                </div>
+            </div>
+        </main>
+
+    </div>
+    <footer id="footer" class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="footer-row">
+                    <h2>portfolio showcase</h2>
+                    <a href="mailto:myportfolione@gmail.com">myportfolione@gmail.com</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js-testing/index.bundle.js"></script>
+    <script src="../js-testing/portfolio.bundle.js"></script>
+    <script src="../js-testing/contacts.bundle.js"></script>
+</body>
+</html>
