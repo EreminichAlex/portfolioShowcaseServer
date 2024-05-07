@@ -227,7 +227,11 @@
       </div>
       <div class="modal-body">
         <div class="modal-body_img-work">
+          {{#if this.fileData}}
+          <p>{{fileData}}</p>
+          {{else}}
             <img src="{{this.file_path}}" alt="изображение">
+          {{/if}}
             <input type="file" id="inputDownloadNewFileWork{{work_id}}" hidden>
             <label for="inputDownloadNewFileWork{{work_id}}" id="btnDownloadNewFileWork" title="Загрузить новую работу"></label>
         </div>

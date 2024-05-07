@@ -22,7 +22,7 @@ app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, '/views'))
 hbs.registerPartials(path.join(__dirname, '/views/partials'));
 
-app.use(handleExpiredTokenError)
+// app.use(handleExpiredTokenError)
 
 app.engine("hbs", expressHbs.engine(
     {
@@ -48,14 +48,27 @@ app.use(cookieParser());
 app.use(express.json());
 
 
-function handleExpiredTokenError(err,req,res,next) {
-    if (err.name === "TokenExpiredError" && !req.cookies.authToken) {
-        // Переадресация на страницу авторизации
-        return res.sendFile(path.join(__dirname, "../portfolio/dist/pages/login.html"))
-
-      }
-    next(err);
-}
+app.use("/",(req,res,next) => {
+    const token = req.cookies.authToken;
+    if (!token) {
+        return next()
+    }
+    jwt.verify(token, 'secret-PortfolioUserToken-231sca', (err, decoded) => {
+        if (err) {
+            if (err.name === 'TokenExpiredError') {
+                if (!req.cookies.redirected) {
+                    res.cookie('redirected', 'true', { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 1 }); 
+                    return res.redirect('/login');
+                }
+                return next();
+            }
+            return next();
+        } 
+        req.user = decoded;
+        req.cookies.redirected = null;
+        return next();
+    });
+})
 
 function requireAuth(req,res,next) {
     const token = req.cookies.authToken;
@@ -93,18 +106,30 @@ function requireAuth(req,res,next) {
 }
 
 // БАЗОВЫЕ ПУТИ
-app.get("/", (req,res) => {
+app.get("/", (req,res, next) => {
     // res.status(200).sendFile(path.join(__dirname, "../portfolio/dist/index.html"))
     
     if (req.cookies.authToken) {
-        const user = jwt.verify(req.cookies.authToken, 'secret-PortfolioUserToken-231sca')
-        res.render("index", {
+        let user;
+        try {
+            user = jwt.verify(req.cookies.authToken, 'secret-PortfolioUserToken-231sca')
+        } catch (err) {
+            console.log(err.name)
+            if (err.name === "TokenExpiredError") {
+                return res.status(401).render("index", {
+                    layout:false,
+                    isAuth: false
+                })
+            }
+            return next()
+        }
+        res.status(200).render("index", {
             layout:false,
             isAuth: true,
             profileNickname: user.nickname
         })
     } else {
-        res.render("index", {
+        res.status(200).render("index", {
             layout:false,
             isAuth: false
         })
@@ -233,7 +258,7 @@ app.get("/profile/:profileNickname", async (req,res) => {
     const user = userArr[0];
     const userData = userArr[1];
     const cardsArr = await Profile.getAllPortfolioByUserId(userData.user_id);
-    console.log(cardsArr)
+
     if (!req.cookies.authToken) {
         return res.render("profile", {
             layout: false,
@@ -307,7 +332,15 @@ app.get("/portfolio/:portfolioId", async (req,res) => {
     const contacts = await Portfolio.getAllContacts(req.params.portfolioId);
     const sections = await Portfolio.getAllSections(req.params.portfolioId);
     const works = await Portfolio.getAllWorks(sections.id);
-    const allPortfolioWorks = await Portfolio.getAllWorksByPortfolioId(req.params.portfolioId)
+    const allPortfolioWorks = await Portfolio.getAllWorksByPortfolioId(req.params.portfolioId);
+
+    try {
+        const FileExtension = allPortfolioWorks[3].file_path.match(/\.([^.]+)$/)[1];
+
+    } catch (err) {
+        
+    }
+
 
     const resSections = await Promise.all(sections.map(async (section) => {
         return {
@@ -316,7 +349,26 @@ app.get("/portfolio/:portfolioId", async (req,res) => {
           works: await Portfolio.getAllWorks(section.id)
         }
       }))
-    
+
+      const resWorks = await Promise.all(allPortfolioWorks.map(async (work) => {
+        const fileExtansion = work.file_path.match(/\.([^.]+)$/)[1];
+        let fileData = null;
+        if (fileExtansion.match(/(md|txt|docx|pdf|rtf)$/)) {
+            fileData = fs.readFileSync(path.join(__dirname,"uploads",work.file_path), "utf-8").toString();
+        }
+
+        return {
+            work_id: work.work_id,
+            section_id: work.section_id,
+            work_name: work.work_name,
+            description: work.description,
+            link: work.link,
+            file_path: work.file_path,
+            file_extansion: work.file_path.match(/\.([^.]+)$/)[1],
+            fileData: fileData || null
+        }
+      }))
+    console.log(resWorks)
     
 
     if (!req.cookies.authToken) {
@@ -361,7 +413,7 @@ app.get("/portfolio/:portfolioId", async (req,res) => {
                 profileNickname: currentUser.nickname,
                 Contacts: contacts,
                 Sections: resSections,
-                Works: allPortfolioWorks,
+                Works: resWorks,
                 BackgroundColor: portfolio.background_color,
                 isGuest: false,
                 notAuthorized: false
