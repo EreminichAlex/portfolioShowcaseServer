@@ -7,13 +7,15 @@ const mysql = require("mysql2");
 const path = require("path");
 const router = require("./routes/auth");
 const User = require("./models/user");
-const { nextTick, title } = require("process");
+const { nextTick, title, send } = require("process");
 const cookieParser = require("cookie-parser");
 const hbs = require("hbs");
 const expressHbs = require("express-handlebars");
 const {Profile} = require("./models/profile");
 const {Portfolio} = require("./models/portfolio");
 const multer = require("multer");
+const mammoth = require("mammoth");
+const pdf = require("pdf-parse")
 const { log } = require("console");
 
 const app = express();
@@ -352,11 +354,41 @@ app.get("/portfolio/:portfolioId", async (req,res) => {
 
       const resWorks = await Promise.all(allPortfolioWorks.map(async (work) => {
         const fileExtansion = work.file_path.match(/\.([^.]+)$/)[1];
+        const filePath = `${path.join(__dirname,"uploads", work.file_path)}`
         let fileData = null;
-        if (fileExtansion.match(/(md|txt|docx|pdf|rtf)$/)) {
+        let hasIframe = true;
+
+        if (fileExtansion.match(/(md|txt|rtf)$/)) {
             fileData = fs.readFileSync(path.join(__dirname,"uploads",work.file_path), "utf-8").toString();
+        } else if (fileExtansion.match(/docx$/)) {
+            await mammoth.extractRawText({path: filePath})
+            .then(result => {
+                fileData = result.value
+            }).catch(err => console.log(err))
+        } else if (fileExtansion.match(/pdf$/)) {
+            try {
+                const data = fs.readFileSync(filePath);
+                const pdfData = await pdf(data);
+                fileData = pdfData.text;
+            } catch (err) {
+                console.log(err);
+                return res.status(500)
+            }
         }
 
+        if (work.link) {
+            if (work.link.includes("youtube.com")) {
+                work.link = `https://www.youtube.com/embed/${work.link.split('v=')[1]}`
+            } else if (work.link.includes("vimeo.com")) {
+                work.link = `https://player.vimeo.com/video/${work.link.split('/')[3]}`
+            } else if (work.link.includes("rutube.ru")) {
+                work.link = `https://rutube.ru/play/embed/${work.link.split('/')[4]}`
+            } else if (work.link.includes("vk.com")) {
+                work.link = `https://vk.com/video_ext.php?oid=-${work.link.split("video-")[1].split("_")[0]}&id=${work.link.split("video-")[1].split("_")[1].split("%")[0]}&hd=2`
+            } else {
+                hasIframe = false;
+            }
+        }
         return {
             work_id: work.work_id,
             section_id: work.section_id,
@@ -364,12 +396,12 @@ app.get("/portfolio/:portfolioId", async (req,res) => {
             description: work.description,
             link: work.link,
             file_path: work.file_path,
+            has_iframe: hasIframe,
+            portfolioId: req.params.portfolioId,
             file_extansion: work.file_path.match(/\.([^.]+)$/)[1],
             fileData: fileData || null
         }
       }))
-    console.log(resWorks)
-    
 
     if (!req.cookies.authToken) {
         return res.render("portfolio", {
@@ -626,6 +658,24 @@ app.put("/portfolio/:portfolioId/change-work-section", async (req,res) => {
         console.log(err)
         res.send(500)
     }
+})
+
+app.get("/portfolio/:portfolioId/download/:file", async (req,res) => {
+    const filePath = path.join(__dirname, 'uploads', req.params.file);
+    
+
+    if (fs.existsSync(filePath)) {
+        console.log(req.params.file)
+        res.setHeader('Content-Disposition', `attachment; filename=${req.params.file}`);
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+
+        const fileStream = fs.createReadStream(filePath);
+        return fileStream.pipe(res);
+    } else {
+        console.log(err)
+        return res.sendStatus(500)
+    }
+    res.status(200).end()
 })
 
 app.listen(8000, ()=>console.log("server started"))

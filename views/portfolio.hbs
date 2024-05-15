@@ -193,10 +193,15 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        {{#if this.link}}
+          <iframe src="{{this.link}}" width="560" height="315" frameborder="0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        {{else}}
+
         <div class="modal-body_img-work">
             <img src="{{this.file_path}}" alt="изображение">
             <input type="file" id="inputDownloadNewFileWork{{work_id}}" hidden>
         </div>
+        {{/if}}
 
             <div class="modal-body_name-work">
                 <h1>{{this.work_name}}</h1>
@@ -226,9 +231,20 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+
         <div class="modal-body_img-work">
           {{#if this.fileData}}
-          <p>{{fileData}}</p>
+          <p class="modal-body_img-work_text-file-content">{{fileData}}</p>
+          {{!-- <button class="modal-body_img-work_download-file" formaction="/portfolio/{{portfolioId}}/download{{file_path}}" formmethod="get">Скачать файл</button> --}}
+          <form action="/portfolio/{{portfolioId}}/download{{file_path}}" method="get">
+            <button type="submit" class="modal-body_img-work_download-file">Скачать файл</button>
+          </form> 
+          {{else if this.link}}
+            {{#if this.has_iframe}} 
+            <iframe src="{{this.link}}" width="100%" height="400px" frameborder="0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            {{else}}
+              <a href="{{this.link}}" target="_blank">Ссылка на внешний ресурс</a>
+            {{/if}}
           {{else}}
             <img src="{{this.file_path}}" alt="изображение">
           {{/if}}
@@ -392,8 +408,6 @@
                             {{#if this.works.length}}
                             {{#each this.works}}
                                 <div class="section_block_work" data-work-id="{{this.work_id}}">
-
-          
                                     <div class="section_block_work_cover"><img src="{{this.file_path}}" alt="Обложка карточки"></div>
                                     <div class="section_block_work_name">{{work_name}}</div>
                                 </div>
