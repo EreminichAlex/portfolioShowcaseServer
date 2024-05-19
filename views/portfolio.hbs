@@ -66,7 +66,7 @@
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Вы действительно хотите полностью удалить эту секцию? Перенесите все свои работы в другие секции, иначе все данные будут удалены навсегда.</p>
+                    <p>Вы действительно хотите полностью удалить эту секцию? Перенесите все свои работы в другие секции ПЕРЕД удалением, иначе все данные будут удалены навсегда.</p>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
@@ -198,7 +198,7 @@
         {{else}}
 
         <div class="modal-body_img-work">
-            <img src="{{this.file_path}}" alt="изображение">
+            <img src="/{{this.file_path}}" alt="изображение">
             <input type="file" id="inputDownloadNewFileWork{{work_id}}" hidden>
         </div>
         {{/if}}
@@ -236,7 +236,7 @@
           {{#if this.fileData}}
           <p class="modal-body_img-work_text-file-content">{{fileData}}</p>
           {{!-- <button class="modal-body_img-work_download-file" formaction="/portfolio/{{portfolioId}}/download{{file_path}}" formmethod="get">Скачать файл</button> --}}
-          <form action="/portfolio/{{portfolioId}}/download{{file_path}}" method="get">
+          <form action="/portfolio/{{portfolioId}}/download/{{file_path}}" method="get">
             <button type="submit" class="modal-body_img-work_download-file">Скачать файл</button>
           </form> 
           {{else if this.link}}
@@ -246,7 +246,7 @@
               <a href="{{this.link}}" target="_blank">Ссылка на внешний ресурс</a>
             {{/if}}
           {{else}}
-            <img src="{{this.file_path}}" alt="изображение">
+            <img src="/{{this.file_path}}" alt="изображение">
           {{/if}}
             <input type="file" id="inputDownloadNewFileWork{{work_id}}" hidden>
             <label for="inputDownloadNewFileWork{{work_id}}" id="btnDownloadNewFileWork" title="Загрузить новую работу"></label>
@@ -408,7 +408,7 @@
                             {{#if this.works.length}}
                             {{#each this.works}}
                                 <div class="section_block_work" data-work-id="{{this.work_id}}">
-                                    <div class="section_block_work_cover"><img src="{{this.file_path}}" alt="Обложка карточки"></div>
+                                      <div class="section_block_work_cover"><img src="/{{this.file_path}}" alt="Обложка карточки"></div>
                                     <div class="section_block_work_name">{{work_name}}</div>
                                 </div>
                             {{/each}}
@@ -430,8 +430,7 @@
                                 <div class="section_block_work" data-work-id="{{this.work_id}}">
 
                                     <img src="../icons/portfolio/delete-icon.svg" class="section_block_work_delete-work" alt="удалить">
-          
-                                    <div class="section_block_work_cover"><img src="{{this.file_path}}" alt="Обложка карточки"></div>
+                                      <div class="section_block_work_cover"><img src="/{{this.file_path}}" alt="Обложка карточки"></div>
                                     <div class="section_block_work_name">{{work_name}}</div>
                                 </div>
                             {{/each}}

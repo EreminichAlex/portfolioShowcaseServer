@@ -208,12 +208,12 @@ class Portfolio {
         }
     }
 
-    async saveWork(sectionId, workName, description, link, file_path) {
+    async saveWork(portfolio_id ,sectionId, workName, description, link, file_path) {
         const connection = await mysql.createConnection(connectionConfig);
 
         try {
-            await connection.query('INSERT INTO work (section_id, work_name, description, link, file_path) VALUES (?,?,?,?,?)', 
-            [sectionId,workName,description,link,file_path])
+            await connection.query('INSERT INTO work (portfolio_id ,section_id, work_name, description, link, file_path) VALUES (?,?,?,?,?,?)', 
+            [portfolio_id,sectionId,workName,description,link,file_path])
         } catch (err) {
             console.log(err)
             return ;
@@ -243,6 +243,21 @@ class Portfolio {
         JOIN sections ON work.section_id = sections.id
         JOIN portfolio ON sections.portfolio_id = portfolio.portfolio_id
         WHERE portfolio.portfolio_id = ?`
+        try {
+            const [row] = await connection.query(query, [portfolioId]);
+            return row;
+        } catch (err) {
+            console.log(err)
+            return ;
+        } finally {
+            connection.end()
+        }
+    }
+
+    static async getAllWorksByPortfolioIdOnly(portfolioId) {
+        const connection = await mysql.createConnection(connectionConfig);
+        const query = `SELECT * FROM work WHERE portfolio_id = ?`
+
         try {
             const [row] = await connection.query(query, [portfolioId]);
             return row;

@@ -333,7 +333,7 @@ app.get("/portfolio/:portfolioId", async (req,res) => {
     
     const contacts = await Portfolio.getAllContacts(req.params.portfolioId);
     const sections = await Portfolio.getAllSections(req.params.portfolioId);
-    const works = await Portfolio.getAllWorks(sections.id);
+    const works = await Portfolio.getAllWorksByPortfolioIdOnly(req.params.portfolioId);
     const allPortfolioWorks = await Portfolio.getAllWorksByPortfolioId(req.params.portfolioId);
 
     try {
@@ -353,32 +353,39 @@ app.get("/portfolio/:portfolioId", async (req,res) => {
       }))
 
       const resWorks = await Promise.all(allPortfolioWorks.map(async (work) => {
-        const fileExtansion = work.file_path.match(/\.([^.]+)$/)[1];
-        const filePath = `${path.join(__dirname,"uploads", work.file_path)}`
-        let fileData = null;
         let hasIframe = true;
+        let isDocument = false;
+        let fileData = null;
 
-        if (fileExtansion.match(/(md|txt|rtf)$/)) {
-            fileData = fs.readFileSync(path.join(__dirname,"uploads",work.file_path), "utf-8").toString();
-        } else if (fileExtansion.match(/docx$/)) {
-            await mammoth.extractRawText({path: filePath})
-            .then(result => {
-                fileData = result.value
-            }).catch(err => console.log(err))
-        } else if (fileExtansion.match(/pdf$/)) {
-            try {
-                const data = fs.readFileSync(filePath);
-                const pdfData = await pdf(data);
-                fileData = pdfData.text;
-            } catch (err) {
-                console.log(err);
-                return res.status(500)
+        if (work.file_path !== null && work.file_path !== "null") {
+            const fileExtansion = work.file_path.match(/\.([^.]+)$/)[1];
+            const filePath = `${path.join(__dirname,"uploads", work.file_path)}`
+
+            if (fileExtansion.match(/(md|txt|rtf)$/)) {
+                fileData = fs.readFileSync(path.join(__dirname,"uploads",work.file_path), "utf-8").toString();
+                isDocument = true;
+            } else if (fileExtansion.match(/docx$/)) {
+                await mammoth.extractRawText({path: filePath})
+                .then(result => {
+                    fileData = result.value
+                }).catch(err => console.log(err))
+                isDocument = true;
+            } else if (fileExtansion.match(/pdf$/)) {
+                isDocument = true;
+                try {
+                    const data = fs.readFileSync(filePath);
+                    const pdfData = await pdf(data);
+                    fileData = pdfData.text;
+                } catch (err) {
+                    console.log(err);
+                    return res.status(500)
+                }
             }
         }
 
         if (work.link) {
             if (work.link.includes("youtube.com")) {
-                work.link = `https://www.youtube.com/embed/${work.link.split('v=')[1]}`
+                work.link = `https://www.youtube.com/embed/${work.link.split('v=')[1].split("&t")[0]}`
             } else if (work.link.includes("vimeo.com")) {
                 work.link = `https://player.vimeo.com/video/${work.link.split('/')[3]}`
             } else if (work.link.includes("rutube.ru")) {
@@ -398,7 +405,7 @@ app.get("/portfolio/:portfolioId", async (req,res) => {
             file_path: work.file_path,
             has_iframe: hasIframe,
             portfolioId: req.params.portfolioId,
-            file_extansion: work.file_path.match(/\.([^.]+)$/)[1],
+            file_extansion: (work.file_path === null || work.file_path === "null") ? null : work.file_path.match(/\.([^.]+)$/)[1],
             fileData: fileData || null
         }
       }))
@@ -412,7 +419,7 @@ app.get("/portfolio/:portfolioId", async (req,res) => {
             profileNickname: targetUser.nickname,
             Contacts: contacts,
             Sections: resSections,
-            Works: allPortfolioWorks,
+            Works: resWorks,
             BackgroundColor: portfolio.background_color,
             isGuest: true,
             notAuthorized: true
@@ -431,7 +438,7 @@ app.get("/portfolio/:portfolioId", async (req,res) => {
                 profileNickname: currentUser.nickname,
                 Contacts: contacts,
                 Sections: resSections,
-                Works: allPortfolioWorks,
+                Works: resWorks,
                 BackgroundColor: portfolio.background_color,
                 isGuest: true,
                 notAuthorized: false
@@ -591,8 +598,9 @@ app.delete("/portfolio/:portfolioId/delete-section", async (req,res) => {
 app.post("/portfolio/:portfolioId/upload", upload.single("file") ,async (req,res)=> {
     const portfolio = new Portfolio(req.params.portfolioId);
     const section = await portfolio.getSectionByName(req.body.sectionName);
-
-    await portfolio.saveWork(section.id, req.body.workName, req.body.workDescription, req.body.workLink, req.body.workPath);
+    console.log("section name", req.body.sectionName)
+    console.log("req.body.workPath", req.body.workPath)
+    await portfolio.saveWork(req.params.portfolioId, section.id, req.body.workName, req.body.workDescription, req.body.workLink, req.body.workPath);
 
     res.status(200).send("Файл упешно загружен");
 })
@@ -662,10 +670,7 @@ app.put("/portfolio/:portfolioId/change-work-section", async (req,res) => {
 
 app.get("/portfolio/:portfolioId/download/:file", async (req,res) => {
     const filePath = path.join(__dirname, 'uploads', req.params.file);
-    
-
     if (fs.existsSync(filePath)) {
-        console.log(req.params.file)
         res.setHeader('Content-Disposition', `attachment; filename=${req.params.file}`);
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
 
@@ -675,6 +680,8 @@ app.get("/portfolio/:portfolioId/download/:file", async (req,res) => {
         console.log(err)
         return res.sendStatus(500)
     }
+    
+
     res.status(200).end()
 })
 
