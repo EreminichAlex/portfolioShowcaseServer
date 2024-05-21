@@ -19,6 +19,21 @@
         <script src="./../bootstrap-5.3.2-dist/js/bootstrap.bundle.min.js"></script>
 
         <style>
+          main {
+            background-image: url(/{{BackgroundPath}});
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            left: 0;
+            top: 0;
+          }
+
+          header, footer {
+            z-index: 999;
+          }
+          main {
+            z-index: 0;
+          }
             .portfolio .portfolio-container .container {
                 background-color: {{BackgroundColor}};
             }
@@ -110,7 +125,7 @@
                             <input name="formFiles" class="form-control mt-3" type="file" id="formFileMultiple" multiple required>
                             <div id="workFormURL" class="form-text">Загруженное изображение также станет на место обложки, иначе ее не будет</div>
                             <input name="formWorkLink" class="form-control mt-3" type="url" placeholder="Ссылка">
-                            <div id="workFormURL" class="form-text">Видеоролики добавляются только через ссылку на видеохостинг</div>
+                            <div id="workFormURL" class="form-text">Видеоролики добавляются только через ссылку. Добавляйте ссылки на видеоролики только с сервисов: youtube, vimeo, rutube, vk. Неверные ссылки, или ссылки с других сервисов будут вставляться в виде обычных ссылок</div>
                             <textarea name="formDescription" class="form-control mt-3" name="work-descr" id="work-descr" placeholder="Напишите описание"></textarea>
                             <p>Или добавьте уже существующую работу в эту секцию:</p>
                             <select name="selectExistCard" class="form-select" aria-label="Default select example">
@@ -181,6 +196,7 @@
 
 {{#if isGuest}}
 {{#each Works}}
+
 <button type="button" class="btn btn-primary" id="openWorkModal{{work_id}}" data-bs-toggle="modal" data-bs-target="#workModal{{work_id}}" hidden>
   btn
 </button>
@@ -193,15 +209,22 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        {{#if this.link}}
-          <iframe src="{{this.link}}" width="560" height="315" frameborder="0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-        {{else}}
 
         <div class="modal-body_img-work">
+          {{#if this.fileData}}
+          <p class="modal-body_img-work_text-file-content">{{fileData}}</p>
+          <form action="/portfolio/{{portfolioId}}/download/{{file_path}}" method="get">
+            <button type="submit" class="modal-body_img-work_download-file">Скачать файл</button>
+          </form> 
+          {{else if this.link}}
+            {{#if this.has_iframe}} 
+            <iframe src="{{this.link}}" width="100%" height="400px" frameborder="0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            {{/if}}
+          {{else}}
             <img src="/{{this.file_path}}" alt="изображение">
+          {{/if}}
             <input type="file" id="inputDownloadNewFileWork{{work_id}}" hidden>
         </div>
-        {{/if}}
 
             <div class="modal-body_name-work">
                 <h1>{{this.work_name}}</h1>
@@ -209,6 +232,9 @@
             <div class="modal-body_description-work">
                 <p>{{this.description}}</p>
             </div>
+            <p>
+              <a href="{{this.originLink}}" target="_blank">Ссылка на внешний ресурс</a>
+            </p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
@@ -242,8 +268,6 @@
           {{else if this.link}}
             {{#if this.has_iframe}} 
             <iframe src="{{this.link}}" width="100%" height="400px" frameborder="0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-            {{else}}
-              <a href="{{this.link}}" target="_blank">Ссылка на внешний ресурс</a>
             {{/if}}
           {{else}}
             <img src="/{{this.file_path}}" alt="изображение">
@@ -260,6 +284,9 @@
                 <p>{{this.description}}</p>
                 <img src="../icons/portfolio/text-edit-icon.png" class="modal-body_description-work_change-descr-btn" alt="Изменить описание">
             </div>
+            <p>
+              <a href="{{this.originLink}}" target="_blank">Ссылка на внешний ресурс</a>
+            </p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
@@ -308,11 +335,16 @@
             </div>
         </header>
 
+
+
         <main class="portfolio">
             <div class="portfolio-container">
+              {{#if BackgroundPath}}
+                <div class="background-img-wrapper"></div>
+              {{/if}}
                 {{#unless isGuest}}
-                <input type="file" id="backgroundImgFile" hidden>
-                <label for="backgroundImgFile" id="backgroundImgFileLabel" title="сменить фон"></label>
+                <input type="file" id="backgroundImgFile{{portfolioId}}" hidden>
+                <label for="backgroundImgFile{{portfolioId}}" id="backgroundImgFileLabel" title="сменить фон"></label>
                 {{/unless}}
                 <div class="container">
                     {{#unless isGuest}}

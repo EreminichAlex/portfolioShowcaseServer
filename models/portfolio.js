@@ -337,6 +337,19 @@ class Portfolio {
             connection.end()
         }
     }
+    static async changePortfolioBackground(portfolioId, imgPath) {
+        const connection = await mysql.createConnection(connectionConfig);
+        const query = "UPDATE portfolio SET background_path = ? WHERE portfolio_id = ?"
+
+        try {
+            await connection.query(query, [imgPath, portfolioId]);
+        } catch (err) {
+            console.log(err)
+            return ;
+        } finally {
+            connection.end()
+        }
+    }
 }
 
 module.exports = {Portfolio}

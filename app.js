@@ -266,6 +266,7 @@ app.get("/profile/:profileNickname", async (req,res) => {
             layout: false,
             Nickname: user.nickname,
             Email: user.email,
+            UserId: userData.user_id,
             Cards: cardsArr,
             profileNickname: user.nickname,
             isGuest: true,
@@ -293,6 +294,7 @@ app.get("/profile/:profileNickname", async (req,res) => {
             layout: false,
             Nickname: user.nickname,
             Email: user.email,
+            UserId: userData.user_id,
             Cards: cardsArr,
             profileNickname: currentUser.nickname,
             isGuest: true,
@@ -303,6 +305,7 @@ app.get("/profile/:profileNickname", async (req,res) => {
             layout: false,
             Nickname: user.nickname,
             Email: user.email,
+            UserId: userData.user_id,
             Cards: cardsArr,
             profileNickname: currentUser.nickname,
             isGuest: false,
@@ -382,26 +385,34 @@ app.get("/portfolio/:portfolioId", async (req,res) => {
                 }
             }
         }
-
-        if (work.link) {
-            if (work.link.includes("youtube.com")) {
-                work.link = `https://www.youtube.com/embed/${work.link.split('v=')[1].split("&t")[0]}`
-            } else if (work.link.includes("vimeo.com")) {
-                work.link = `https://player.vimeo.com/video/${work.link.split('/')[3]}`
-            } else if (work.link.includes("rutube.ru")) {
-                work.link = `https://rutube.ru/play/embed/${work.link.split('/')[4]}`
-            } else if (work.link.includes("vk.com")) {
-                work.link = `https://vk.com/video_ext.php?oid=-${work.link.split("video-")[1].split("_")[0]}&id=${work.link.split("video-")[1].split("_")[1].split("%")[0]}&hd=2`
-            } else {
-                hasIframe = false;
+        let workLink = work.link;
+        let originLink = work.link;
+        try {
+            if (work.link) {
+                if (work.link.includes("youtube.com")) {
+                    work.link = `https://www.youtube.com/embed/${work.link.split('v=')[1].split("&t")[0]}`
+                } else if (work.link.includes("vimeo.com")) {
+                    work.link = `https://player.vimeo.com/video/${work.link.split('/')[3]}`
+                } else if (work.link.includes("rutube.ru")) {
+                    work.link = `https://rutube.ru/play/embed/${work.link.split('/')[4]}`
+                } else if (work.link.includes("vk.com")) {
+                    work.link = `https://vk.com/video_ext.php?oid=-${work.link.split("video-")[1].split("_")[0]}&id=${work.link.split("video-")[1].split("_")[1].split("%")[0]}&hd=2`
+                } else {
+                    hasIframe = false;
+                }
             }
+            workLink = work.link;
+        } catch (err) {
+            hasIframe = false;
         }
+
         return {
             work_id: work.work_id,
             section_id: work.section_id,
             work_name: work.work_name,
             description: work.description,
-            link: work.link,
+            link: workLink,
+            originLink: originLink,
             file_path: work.file_path,
             has_iframe: hasIframe,
             portfolioId: req.params.portfolioId,
@@ -420,7 +431,9 @@ app.get("/portfolio/:portfolioId", async (req,res) => {
             Contacts: contacts,
             Sections: resSections,
             Works: resWorks,
+            portfolioId: req.params.portfolioId,
             BackgroundColor: portfolio.background_color,
+            BackgroundPath: portfolio.background_path,
             isGuest: true,
             notAuthorized: true
         })
@@ -439,7 +452,9 @@ app.get("/portfolio/:portfolioId", async (req,res) => {
                 Contacts: contacts,
                 Sections: resSections,
                 Works: resWorks,
+                portfolioId: req.params.portfolioId,
                 BackgroundColor: portfolio.background_color,
+                BackgroundPath: portfolio.background_path,
                 isGuest: true,
                 notAuthorized: false
             })
@@ -453,7 +468,9 @@ app.get("/portfolio/:portfolioId", async (req,res) => {
                 Contacts: contacts,
                 Sections: resSections,
                 Works: resWorks,
+                portfolioId: req.params.portfolioId,
                 BackgroundColor: portfolio.background_color,
+                BackgroundPath: portfolio.background_path,
                 isGuest: false,
                 notAuthorized: false
             })
@@ -551,7 +568,17 @@ app.delete("/portfolio/:portfolioId/delete-portfolio", async (req,res) => {
         console.log(err);
         res.sendStatus(500);
     } finally {
-        res.status(302).redirect('/');
+        setTimeout(() => res.redirect("/"), 1500)
+        // return res.status(200).render("information-body", {
+        //     layout: "information",
+        //     title: "Успешное удаление",
+        //     pageTitle: "Ваше портфолио было удалено!",
+        //     haveMessage: false,
+        //     message: "",
+        //     link: `/profile/${req.params.portfolioId}`,
+        //     linkMessage: "В профиль",
+        //     isAuth: Boolean(req.cookies.authToken)
+        // })
     }
 })
 
@@ -680,9 +707,22 @@ app.get("/portfolio/:portfolioId/download/:file", async (req,res) => {
         console.log(err)
         return res.sendStatus(500)
     }
-    
-
     res.status(200).end()
+})
+
+app.put("/portfolio/:portfolioId/change-portfolio-background", upload.single("file"),async (req,res) => {
+    try {
+        await Portfolio.changePortfolioBackground(req.body.portfolioId, req.body.workPath);
+        fs.unlink(path.join(__dirname,`/uploads/${req.body.previousFile}`), (err) => {
+            if (err) {
+                return console.log(err);
+            }
+        })
+        res.sendStatus(200)
+    } catch(err) {
+        console.log(err)
+        res.send(500)
+    }
 })
 
 app.listen(8000, ()=>console.log("server started"))

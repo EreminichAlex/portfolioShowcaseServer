@@ -82,7 +82,8 @@ router.use('/login', async (req, res) => {
 
         let accessToken = await user.generateAuthTokens();
 
-        res.cookie('authToken', accessToken, {httpOnly: true})
+        res.cookie('authToken', accessToken, {httpOnly: true});
+
         
         return res.status(200).render("information-body", {
             layout: "information",
@@ -90,7 +91,7 @@ router.use('/login', async (req, res) => {
             pageTitle: "Успешная авторизация",
             haveMessage: true,
             message: "Вы успешно авторизовались!",
-            link: "/profile",
+            link: `/profile/${nickname}`,
             linkMessage: "Профиль",
             isAuth: Boolean(req.cookies.authToken)
             
