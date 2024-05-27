@@ -43,9 +43,7 @@
     </head>
 <body>
     <div class="wrapper">
-
     <!-- ---------------- MODAL SECTION ----------------- -->
-
         <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
               <div class="modal-content bg-dark-subtle">
@@ -90,8 +88,6 @@
               </div>
             </div>
           </div>
-
-
         {{!-- PORTFOLIO DELETE ATTENTION  --}}
         <div class="modal fade" id="portfolioDeleteAttentionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -111,7 +107,6 @@
             </div>
         </div>
         <!-- modal for adding works -->
-
         <div class="modal fade" id="addingWorkModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -143,7 +138,6 @@
                 </div>
             </div>
         </div>
-
         {{!-- SECTION LIMIT ATTENTION --}}
         <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary" id="sectionsLimitModalActivate" data-bs-toggle="modal" data-bs-target="#sectionsLimitModal" hidden>
@@ -166,12 +160,10 @@
     </div>
   </div>
 </div>
-
 <!-- ATTENTION FOR WORK DELETE -->
 <button type="button" class="btn btn-primary" id="deleteWorkAttentionBtn" data-bs-toggle="modal" data-bs-target="#deleteWorkAttention" hidden>
   Launch demo modal
 </button>
-
 <!-- Modal -->
 <div class="modal fade" id="deleteWorkAttention" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -190,10 +182,7 @@
     </div>
   </div>
 </div>
-
-
 {{!-- modals FOR WORK --}}
-
 {{#if isGuest}}
 {{#each Works}}
 
@@ -261,7 +250,6 @@
         <div class="modal-body_img-work">
           {{#if this.fileData}}
           <p class="modal-body_img-work_text-file-content">{{fileData}}</p>
-          {{!-- <button class="modal-body_img-work_download-file" formaction="/portfolio/{{portfolioId}}/download{{file_path}}" formmethod="get">Скачать файл</button> --}}
           <form action="/portfolio/{{portfolioId}}/download/{{file_path}}" method="get">
             <button type="submit" class="modal-body_img-work_download-file">Скачать файл</button>
           </form> 
@@ -296,199 +284,170 @@
 </div>
 {{/each}}
 {{/if}}
-
-        <header>
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="header_logo col-md-12 col-lg-4">
-                        <a href="../index.html"><img src="../icons/logo.png" alt="Logo"></a>
-                    </div>
-                    <nav class="header_nav col-8">
-                        <ul class="header_nav_list">
-                            {{#if notAuthorized}}
-                            <li class="header_nav_list_item" ><a href="/registration">войти/зарегистрироваться</a></li>
-                            {{else}}
-                            <div class="dropdown">
-                                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                  Аккаунт 
-                                </a>
-                              
-                                <ol class="dropdown-menu">
-                                  <li><a class="dropdown-item" href="/profile/{{profileNickname}}">Профиль</a></li>
-                                  <li><a class="dropdown-item" href="/logout">Выйти</a></li>
-                                </ol>
-                              </div>
-                            {{/if}}  
-                        </ul>
-                    </nav>
-                    <div class="hamburger">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                    <ul class="header_hamburger-nav_list" hidden>
-                        <li><a href="/">Главная</a></li>
-                        <li><a href="/profile">Профиль</a></li>
-                        <li><a href="/logout">Выйти</a></li>
-                    </ul>
-                </div>
+<header>
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="header_logo col-md-12 col-lg-4">
+                <a href="../index.html"><img src="../icons/logo.png" alt="Logo"></a>
             </div>
-        </header>
+            <nav class="header_nav col-8">
+                <ul class="header_nav_list">
+                    {{#if notAuthorized}}
+                    <li class="header_nav_list_item" ><a href="/registration">войти/зарегистрироваться</a></li>
+                    {{else}}
+                    <div class="dropdown">
+                        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          Аккаунт 
+                        </a>
+                      
+                        <ol class="dropdown-menu">
+                          <li><a class="dropdown-item" href="/profile/{{profileNickname}}">Профиль</a></li>
+                          <li><a class="dropdown-item" href="/logout">Выйти</a></li>
+                        </ol>
+                      </div>
+                    {{/if}}  
+                </ul>
+            </nav>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="header_hamburger-nav_list" hidden>
+                <li><a href="/">Главная</a></li>
+                <li><a href="/profile">Профиль</a></li>
+                <li><a href="/logout">Выйти</a></li>
+            </ul>
+        </div>
+    </div>
+</header>
 
 
 
-        <main class="portfolio">
-            <div class="portfolio-container">
-              {{#if BackgroundPath}}
-                <div class="background-img-wrapper"></div>
-              {{/if}}
-                {{#unless isGuest}}
-                <input type="file" id="backgroundImgFile{{portfolioId}}" hidden>
-                <label for="backgroundImgFile{{portfolioId}}" id="backgroundImgFileLabel" title="сменить фон"></label>
-                {{/unless}}
-                <div class="container">
-                    {{#unless isGuest}}
-                    <div class="portfolio-settings">
-                        <img src="../icons/portfolio/gear.svg" class="portfolio-settings_icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" alt="Настройки">
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#portfolioDeleteAttentionModal">Удалить портфолио</a></li>
-                        </ul>
-                    </div>
-                    <img src="../icons/portfolio/color-picker-icon.svg" class="bck-change-color" alt="сменить цвет фона" title="сменить цвет фона">
-                    {{/unless}}
-                    <input type="color" title="Choose your color" id="colorInputBackground" class="form-control form-control-color" hidden>
-                    <div class="portfolio-container_info">
-                        <div class="portfolio-container_info_image col-sm-4 col-md-3">
-                            <div class="portfolio-container_info_image_img"><img src="../icons/portfolio/user-icon.png" alt="фото профиля"></div>
-                            <div class="portfolio-container_info_image_contacts">
-                                <div class="portfolio-container_info_image_contacts_collapse-btn">Контакты <img src="../icons/portfolio/arrow-right.svg" alt=""> </div>
-                                <div class="portfolio-container_info_image_contacts_collapse-block" hidden>
-                                    <ul>
-                                        {{#if isGuest}}
-                                        {{#each Contacts}}
-                                        <div class="portfolio-container_info_image_contacts_collapse-block_contact">
-                                            <a class="contact-name" href="{{link}}" target="_blank">{{link_name}}</a>
-                                        </div>
-                                        {{/each}}
-                                        {{else}}
-                                        {{#each Contacts}}
-                                        <div class="portfolio-container_info_image_contacts_collapse-block_contact">
-                                            <a class="contact-name" href="{{link}}" target="_blank">{{link_name}}</a>
-                                            <img src="../icons/portfolio/delete-icon.svg" class="delete-contact">
-                                        </div>
-                                        {{/each}}
-                                        {{/if}}
-                                        {{#unless isGuest}}
-                                        <li>
-                                            <div class="portfolio-container_info_image_contacts_collapse-block_add-contact" title="добавить контакт" data-bs-toggle="modal" data-bs-target="#contactModal">
-                                                <img src="../icons/portfolio/add-contact-icon.png" alt="add contact">
-                                            </div>
-                                        </li>
-                                        {{/unless}}
-
-
-                                        <!-- BLOCK CONTACT TEMPLATE -->
-                                        <!-- <li><div class="portfolio-container_info_image_contacts_collapse-block_contact">
-                                            <h3 class="contact-name">контакт</h3>
-                                            <p class="contact-link">Ссылка</p>
-                                        </div></li> -->
-
-                                    </ul>
+<main class="portfolio">
+    <div class="portfolio-container">
+      {{#if BackgroundPath}}
+        <div class="background-img-wrapper"></div>
+      {{/if}}
+        {{#unless isGuest}}
+        <input type="file" id="backgroundImgFile{{portfolioId}}" hidden>
+        <label for="backgroundImgFile{{portfolioId}}" id="backgroundImgFileLabel" title="сменить фон"></label>
+        {{/unless}}
+        <div class="container">
+            {{#unless isGuest}}
+            <div class="portfolio-settings">
+                <img src="../icons/portfolio/gear.svg" class="portfolio-settings_icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" alt="Настройки">
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#portfolioDeleteAttentionModal">Удалить портфолио</a></li>
+                </ul>
+            </div>
+            <img src="../icons/portfolio/color-picker-icon.svg" class="bck-change-color" alt="сменить цвет фона" title="сменить цвет фона">
+            {{/unless}}
+            <input type="color" title="Choose your color" id="colorInputBackground" class="form-control form-control-color" hidden>
+            <div class="portfolio-container_info">
+                <div class="portfolio-container_info_image col-sm-4 col-md-3">
+                    <div class="portfolio-container_info_image_img"><img src="../icons/portfolio/user-icon.png" alt="фото профиля"></div>
+                    <div class="portfolio-container_info_image_contacts">
+                        <div class="portfolio-container_info_image_contacts_collapse-btn">Контакты <img src="../icons/portfolio/arrow-right.svg" alt=""> </div>
+                        <div class="portfolio-container_info_image_contacts_collapse-block" hidden>
+                            <ul>
+                                {{#if isGuest}}
+                                {{#each Contacts}}
+                                <div class="portfolio-container_info_image_contacts_collapse-block_contact">
+                                    <a class="contact-name" href="{{link}}" target="_blank">{{link_name}}</a>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="portfolio-container_info_text-content col-9">
-                            <h2 class="portfolio-container_info_text-content_username"><a href="/profile/{{Nickname}}">{{Nickname}}</a></h2>
-                            <div class="portfolio-container_info_text-content_block-name">
-                                <h3 class="portfolio-container_info_text-content_name">{{Name}}</h3>
+                                {{/each}}
+                                {{else}}
+                                {{#each Contacts}}
+                                <div class="portfolio-container_info_image_contacts_collapse-block_contact">
+                                    <a class="contact-name" href="{{link}}" target="_blank">{{link_name}}</a>
+                                    <img src="../icons/portfolio/delete-icon.svg" class="delete-contact">
+                                </div>
+                                {{/each}}
+                                {{/if}}
                                 {{#unless isGuest}}
-                                <img src="../icons/portfolio/descr-edit-icon.png" class="portfolio-container_info_text-content_name_img-change" alt="сменить имя">
+                                <li>
+                                    <div class="portfolio-container_info_image_contacts_collapse-block_add-contact" title="добавить контакт" data-bs-toggle="modal" data-bs-target="#contactModal">
+                                        <img src="../icons/portfolio/add-contact-icon.png" alt="add contact">
+                                    </div>
+                                </li>
                                 {{/unless}}
-                            </div>
-                            <div class="portfolio-container_info_text-content_descr"><p>{{PortfolioDescription}}</p>
-                            {{#unless isGuest}}
-                            <img src="../icons/portfolio/descr-edit-icon.png" alt="сменить описание">
-                            {{/unless}}
-                            </div>
+                            </ul>
                         </div>
                     </div>
-
-                    <div class="sections">
-
-                        <!-- TEMPPLATE FOR DEFAULT SECTIONS BLOCK -->
-                        <!-- <div class="section">
-                            <div class="section_title">
-                                <h2 class="section_title_name">Секция 1</h2>
-                                <img src="../icons/portfolio/text-edit-icon.png" class="section_title_icon" alt="Изменить название" title="Изменить название">
-                            </div>
-                            <div class="section_block">
-                                <div class="section_block_work">
-                                    <div class="section_block_work_add-work">
-                                        <img src="../icons/portfolio/add-work-icon.png" alt="добавить работу">
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
-                        {{#if isGuest}}
-                        {{#each Sections}}
-                        <div class="section" data-section-id="{{id}}">
-                            <div class="section_title">
-                                <h2 class="section_title_name">{{name}}</h2>
-                                {{!-- <img src="../icons/portfolio/text-edit-icon.png" class="section_title_icon" alt="Изменить название" title="Изменить название"> --}}
-                            </div>
-                            <div class="section_block">
-                            {{#if this.works.length}}
-                            {{#each this.works}}
-                                <div class="section_block_work" data-work-id="{{this.work_id}}">
-                                      <div class="section_block_work_cover"><img src="/{{this.file_path}}" alt="Обложка карточки"></div>
-                                    <div class="section_block_work_name">{{work_name}}</div>
-                                </div>
-                            {{/each}}
-                            {{/if}}
-                            </div>
-                        </div>
-                        {{/each}}
-                        {{else}}
-                        {{#each Sections}}
-                        <div class="section" data-section-id="{{id}}">
-                            <div class="section_title">
-                                <h2 class="section_title_name">{{name}}</h2>
-                                <img src="../icons/portfolio/text-edit-icon.png" class="section_title_icon" alt="Изменить название" title="Изменить название">
-                            </div>
-                            <img class="delete-section" data-bs-toggle="modal" data-bs-target="#deleteSectionModal" src="../icons/portfolio/delete-icon.svg" title="удалить секцию">
-                            <div class="section_block">
-                            {{#if this.works.length}}
-                            {{#each this.works}}
-                                <div class="section_block_work" data-work-id="{{this.work_id}}">
-
-                                    <img src="../icons/portfolio/delete-icon.svg" class="section_block_work_delete-work" alt="удалить">
-                                      <div class="section_block_work_cover"><img src="/{{this.file_path}}" alt="Обложка карточки"></div>
-                                    <div class="section_block_work_name">{{work_name}}</div>
-                                </div>
-                            {{/each}}
-                            {{/if}}
-                                <div class="section_block_work">
-                                    <div class="section_block_work_add-work">
-                                        <img data-bs-toggle="modal" data-bs-target="#addingWorkModal" src="../icons/portfolio/add-work-icon.png" alt="добавить работу">
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                        {{/each}}
-                        {{/if}}
+                </div>
+                <div class="portfolio-container_info_text-content col-9">
+                    <h2 class="portfolio-container_info_text-content_username"><a href="/profile/{{Nickname}}">{{Nickname}}</a></h2>
+                    <div class="portfolio-container_info_text-content_block-name">
+                        <h3 class="portfolio-container_info_text-content_name">{{Name}}</h3>
+                        {{#unless isGuest}}
+                        <img src="../icons/portfolio/descr-edit-icon.png" class="portfolio-container_info_text-content_name_img-change" alt="сменить имя">
+                        {{/unless}}
                     </div>
-
+                    <div class="portfolio-container_info_text-content_descr"><p>{{PortfolioDescription}}</p>
                     {{#unless isGuest}}
-                    <div class="add-section">
-                        <h3>Добавить секцию</h3>
-                        <img src="../icons/portfolio/add-section-icon.png" alt="добавить секцию">
-                    </div>
+                    <img src="../icons/portfolio/descr-edit-icon.png" alt="сменить описание">
                     {{/unless}}
+                    </div>
                 </div>
             </div>
-        </main>
 
+            <div class="sections">
+                {{#if isGuest}}
+                {{#each Sections}}
+                <div class="section" data-section-id="{{id}}">
+                    <div class="section_title">
+                        <h2 class="section_title_name">{{name}}</h2>
+                    </div>
+                    <div class="section_block">
+                    {{#if this.works.length}}
+                    {{#each this.works}}
+                        <div class="section_block_work" data-work-id="{{this.work_id}}">
+                              <div class="section_block_work_cover"><img src="/{{this.file_path}}" alt="Обложка карточки"></div>
+                            <div class="section_block_work_name">{{work_name}}</div>
+                        </div>
+                    {{/each}}
+                    {{/if}}
+                    </div>
+                </div>
+                {{/each}}
+                {{else}}
+                {{#each Sections}}
+                <div class="section" data-section-id="{{id}}">
+                    <div class="section_title">
+                        <h2 class="section_title_name">{{name}}</h2>
+                        <img src="../icons/portfolio/text-edit-icon.png" class="section_title_icon" alt="Изменить название" title="Изменить название">
+                    </div>
+                    <img class="delete-section" data-bs-toggle="modal" data-bs-target="#deleteSectionModal" src="../icons/portfolio/delete-icon.svg" title="удалить секцию">
+                    <div class="section_block">
+                    {{#if this.works.length}}
+                    {{#each this.works}}
+                        <div class="section_block_work" data-work-id="{{this.work_id}}">
+                            <img src="../icons/portfolio/delete-icon.svg" class="section_block_work_delete-work" alt="удалить">
+                              <div class="section_block_work_cover"><img src="/{{this.file_path}}" alt="Обложка карточки"></div>
+                            <div class="section_block_work_name">{{work_name}}</div>
+                        </div>
+                    {{/each}}
+                    {{/if}}
+                        <div class="section_block_work">
+                            <div class="section_block_work_add-work">
+                                <img data-bs-toggle="modal" data-bs-target="#addingWorkModal" src="../icons/portfolio/add-work-icon.png" alt="добавить работу">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+                {{/if}}
+            </div>
+            {{#unless isGuest}}
+            <div class="add-section">
+                <h3>Добавить секцию</h3>
+                <img src="../icons/portfolio/add-section-icon.png" alt="добавить секцию">
+            </div>
+            {{/unless}}
+        </div>
+    </div>
+</main>
     </div>
     <footer id="footer" class="footer">
         <div class="container">

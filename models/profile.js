@@ -63,6 +63,20 @@ class Profile {
         }
     }
 
+    static async changeAvatarFile(userId, imgPath) {
+        const connection = await mysql.createConnection(connectionConfig);
+        const query = 'UPDATE users SET avatar_path = ? WHERE user_id = ?'
+
+        try {
+            await connection.query(query, [imgPath, userId]) 
+        } catch(err) {
+            console.log(err)
+            return;
+        } finally {
+            connection.end()
+        }
+    }
+
 }
 
 module.exports = {Profile}

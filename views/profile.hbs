@@ -21,7 +21,6 @@
     <title>Профиль</title>
 </head>
 <body>
-<!-- MODAL FOR ADDING PORTFOLIOS -->
 <div class="modal fade" id="addingPortfolioModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -49,8 +48,6 @@
       </div>
     </div>
   </div>
-{{!-- ------ --}}
-
 
     <div class="wrapper">
         <header>
@@ -98,7 +95,11 @@
                         <div class="profile-container_info_image">
                             <input type="file" id="changeAvatarFile" data-user-id="{{UserId}}" hidden>
                             <label for="changeAvatarFile" id="changeAvatarFileLabel" title="Изменить аватар">
+                                {{#if ProfileAvatarImg}}
+                                <img src="/{{ProfileAvatarImg}}" alt="фото профиля">
+                                {{else}}
                                 <img src="../icons/portfolio/user-icon.png" alt="фото профиля">
+                                {{/if}}
                             </label>
                         </div>
 
@@ -132,7 +133,6 @@
                     </div>
                 </div>
             </div>
-
         </main>
     </div>
 

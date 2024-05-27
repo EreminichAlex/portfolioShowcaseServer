@@ -259,6 +259,7 @@ app.get("/profile/:profileNickname", async (req,res) => {
     const userArr = await User.findByNickname(req.params.profileNickname);
     const user = userArr[0];
     const userData = userArr[1];
+    console.log(userData)
     const cardsArr = await Profile.getAllPortfolioByUserId(userData.user_id);
 
     if (!req.cookies.authToken) {
@@ -268,6 +269,7 @@ app.get("/profile/:profileNickname", async (req,res) => {
             Email: user.email,
             UserId: userData.user_id,
             Cards: cardsArr,
+            ProfileAvatarImg: userData.avatar_path,
             profileNickname: user.nickname,
             isGuest: true,
             notAuthorized: true
@@ -296,6 +298,7 @@ app.get("/profile/:profileNickname", async (req,res) => {
             Email: user.email,
             UserId: userData.user_id,
             Cards: cardsArr,
+            ProfileAvatarImg: userData.avatar_path,
             profileNickname: currentUser.nickname,
             isGuest: true,
             notAuthorized: false
@@ -308,6 +311,7 @@ app.get("/profile/:profileNickname", async (req,res) => {
             UserId: userData.user_id,
             Cards: cardsArr,
             profileNickname: currentUser.nickname,
+            ProfileAvatarImg: userData.avatar_path,
             isGuest: false,
             notAuthorized: false
         })
@@ -713,6 +717,23 @@ app.get("/portfolio/:portfolioId/download/:file", async (req,res) => {
 app.put("/portfolio/:portfolioId/change-portfolio-background", upload.single("file"),async (req,res) => {
     try {
         await Portfolio.changePortfolioBackground(req.body.portfolioId, req.body.workPath);
+        fs.unlink(path.join(__dirname,`/uploads/${req.body.previousFile}`), (err) => {
+            if (err) {
+                return console.log(err);
+            }
+        })
+        res.sendStatus(200)
+    } catch(err) {
+        console.log(err)
+        res.send(500)
+    }
+})
+
+app.put("/profile/:profileNickname/change-avatar-file", upload.single("file"), async(req,res) => {
+    try {
+        const userData = await User.findByNickname(req.body.nickname);
+        console.log(userData[1].user_id)
+        await Profile.changeAvatarFile(userData[1].user_id, req.body.avatarPath);
         fs.unlink(path.join(__dirname,`/uploads/${req.body.previousFile}`), (err) => {
             if (err) {
                 return console.log(err);
